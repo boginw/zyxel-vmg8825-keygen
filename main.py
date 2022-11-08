@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
 import sys
-from GenKeyBySerialNum import *
-from GenKeyBySerialNum_CBT import *
-from GenKeyBySerialNumMethod2 import *
-from GenKeyBySerialNumMethod3 import *
-from GenKeyBySerialNumConfigLength import *
-from GenKeyBySerialNumConfigLengthOld import *
+from functions.GenKeyBySerialNum import *
+from functions.GenKeyBySerialNum_CBT import *
+from functions.GenKeyBySerialNumMethod2 import *
+from functions.GenKeyBySerialNumMethod3 import *
+from functions.GenKeyBySerialNumConfigLength import *
+from functions.GenKeyBySerialNumConfigLengthOld import *
 
 serialNumber = sys.argv[1]
 
