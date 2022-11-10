@@ -1,0 +1,19 @@
+zcfgBeCommonGenKeyBySerialNumMethod2: 46901a90
+zcfgBeCommonGenKeyBySerialNumMethod3: A4FwX57859
+zcfgBeCommonGenKeyBySerialNumConfigLengthOld("inputKey", 8, 1): 8YD7XXY7
+zcfgBeCommonGenKeyBySerialNumConfigLengthOld("inputKey", 8, 2): Nh777V9N
+zcfgBeCommonGenKeyBySerialNumConfigLengthOld("inputKey", 8, 3): 88D78CBN
+zcfgBeCommonGenKeyBySerialNumConfigLength("inputKey", 8, 1): 4WXYTAXY
+zcfgBeCommonGenKeyBySerialNumConfigLength("inputKey", 8, 2): rsM4X9M4
+zcfgBeWindCommonGenKeyBySerialNumConfigLengthOld(2): 77P77V9NzU
+zcfgBeWindCommonGenKeyBySerialNumConfigLengthOld(1): 8YD7XXY7TU
+zcfgBeWindCommonGenKeyBySerialNumConfigLength(2): rsM4X9M4Nx
+zcfgBeWindCommonGenKeyBySerialNumConfigLength(1): 4WXYTAXYAT
+zcfgBeWlanGenDefaultKey(2, 16, 1): DRAG7JNEQ4NK7CKA
+zcfgBeWlanGenDefaultKey(0, 0, 0): 66801E45D7C9BAFB49B1148555
+zcfgBeWlanGenDefaultKey(1, 0, 0): E74A515558
+zcfgBeWlanGenDefaultKey(2, 16, 0): DRA670VEZ4VI7CIA
+zcfgBeWlanGenDefaultKey(2, 16, 2): DRAE7GVEL4VH7CHA
+zcfgBeWlanGenDefaultKey(2, 16, 3): dracdgvezavhdcha
+zcfgBeWlanGenDefaultKey(2, 16, 4): DRA676VE94V77C7A
+zcfgBeWlanGenDefaultKey(2, 16, 5): 7RAy73V9P4VH7CHA

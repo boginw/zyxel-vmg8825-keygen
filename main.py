@@ -1,6 +1,18 @@
 #!/usr/bin/python3
 
+import argparse
 import sys
+import common.config
+
+parser = argparse.ArgumentParser()
+parser.add_argument("serial", help="Serial number of the router")
+parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+parser.add_argument("-f", "--function", help="function to run")
+args = parser.parse_args()
+
+if (args.verbose):
+    common.config.debug = True
+
 from functions.GenKeyBySerialNum import *
 from functions.GenKeyBySerialNum_CBT import *
 from functions.GenKeyBySerialNumMethod2 import *
@@ -8,26 +20,29 @@ from functions.GenKeyBySerialNumMethod3 import *
 from functions.GenKeyBySerialNumConfigLength import *
 from functions.GenKeyBySerialNumConfigLengthOld import *
 
-serialNumber = sys.argv[1]
+functionFound = False
 
-res1 = zcfgBeCommonGenKeyBySerialNum("inputKey", serialNumber)
-res2 = zcfgBeCommonGenKeyBySerialNum_CBT(serialNumber)
-res3 = zcfgBeCommonGenKeyBySerialNumMethod2(serialNumber)
-res4 = zcfgBeCommonGenKeyBySerialNumMethod3(serialNumber)
-res5 = zcfgBeCommonGenKeyBySerialNumConfigLength(serialNumber, 8, 1)
-res6 = zcfgBeCommonGenKeyBySerialNumConfigLength(serialNumber, 8, 2)
-res7 = zcfgBeCommonGenKeyBySerialNumConfigLength(serialNumber, 8, 3)
-res8 = zcfgBeCommonGenKeyBySerialNumConfigLengthOld(serialNumber, "inputKey", 8, 1)
-res9 = zcfgBeCommonGenKeyBySerialNumConfigLengthOld(serialNumber, "inputKey", 8, 2)
-resA = zcfgBeCommonGenKeyBySerialNumConfigLengthOld(serialNumber, "inputKey", 8, 3)
+def run(key: str, f):
+    global args, functionFound
+    if (args.function == None or args.function == key):
+        print("{:48}: {}".format(key, f()))
+        functionFound = True
 
-print("zcfgBeCommonGenKeyBySerialNum:                   {}".format(res1))
-print("zcfgBeCommonGenKeyBySerialNum_CBT:               {}".format(res2))
-print("zcfgBeCommonGenKeyBySerialNumMethod2:            {}".format(res3))
-print("zcfgBeCommonGenKeyBySerialNumMethod3:            {}".format(res4))
-print("zcfgBeCommonGenKeyBySerialNumConfigLength(1):    {}".format(res5))
-print("zcfgBeCommonGenKeyBySerialNumConfigLength(2):    {}".format(res6))
-print("zcfgBeCommonGenKeyBySerialNumConfigLength(3):    {}".format(res7))
-print("zcfgBeCommonGenKeyBySerialNumConfigLengthOld(1): {}".format(res8))
-print("zcfgBeCommonGenKeyBySerialNumConfigLengthOld(2): {}".format(res9))
-print("zcfgBeCommonGenKeyBySerialNumConfigLengthOld(3): {}".format(resA))
+key = common.config.defaultInputKey
+serial = args.serial
+
+run("zcfgBeCommonGenKeyBySerialNum", lambda: zcfgBeCommonGenKeyBySerialNum(serial, key))
+run("zcfgBeCommonGenKeyBySerialNum_CBT", lambda: zcfgBeCommonGenKeyBySerialNum_CBT(serial))
+run("zcfgBeCommonGenKeyBySerialNumMethod2", lambda: zcfgBeCommonGenKeyBySerialNumMethod2(serial))
+run("zcfgBeCommonGenKeyBySerialNumMethod3", lambda: zcfgBeCommonGenKeyBySerialNumMethod3(serial))
+run("zcfgBeCommonGenKeyBySerialNumConfigLength(1)", lambda: zcfgBeCommonGenKeyBySerialNumConfigLength(serial, key, 8, 1))
+run("zcfgBeCommonGenKeyBySerialNumConfigLength(2)", lambda: zcfgBeCommonGenKeyBySerialNumConfigLength(serial, key, 8, 2))
+run("zcfgBeCommonGenKeyBySerialNumConfigLength(3)", lambda: zcfgBeCommonGenKeyBySerialNumConfigLength(serial, key, 8, 3))
+run("zcfgBeCommonGenKeyBySerialNumConfigLengthOld(1)", lambda: zcfgBeCommonGenKeyBySerialNumConfigLengthOld(serial, key, 8, 1))
+run("zcfgBeCommonGenKeyBySerialNumConfigLengthOld(2)", lambda: zcfgBeCommonGenKeyBySerialNumConfigLengthOld(serial, key, 8, 2))
+run("zcfgBeCommonGenKeyBySerialNumConfigLengthOld(3)", lambda: zcfgBeCommonGenKeyBySerialNumConfigLengthOld(serial, key, 8, 3))
+
+if (not functionFound):
+    print("Could not find function: " + args.function)
+    parser.print_usage()
+    sys.exit()

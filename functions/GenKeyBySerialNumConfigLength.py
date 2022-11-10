@@ -1,91 +1,93 @@
-from doubleHash import doubleHash
-from config import *
-from binUtils import *
+from common.config import *
+from common.doubleHash import doubleHash
+from common.mod3KeyGenerator import mod3KeyGenerator
+from common.utils import *
+from functions.IsApplyRandomAdminPasswordNewAlgorithm import *
+from functions.GenKeyBySerialNumConfigLengthOld import *
 
-strs5 = asAscii("125690IOSZ")
-strs6 = asAscii("3478ABCDEFGHJKLMNPQRTUVWXY")
+keyStrMethod1 = asAscii("125690IOSZ")
+valStrMethod1 = asAscii("3478ABCDEFGHJKLMNPQRTUVWXY")
 
-strs7 = asAscii("BDEFGILOQSZ")
-strs8 = asAscii("acegilnoq")
-strs9 = asAscii("125680")
+keyStr1 = asAscii("BDEFGILOQSZ")
+keyStr2 = asAscii("acegilnoq")
+keyStr3 = asAscii("125680")
 
-strsA = asAscii("ACHJKMNPRTUVWXY")
-strsB = asAscii("bdfhjkmprstuvwxyz")
-strsC = asAscii("3479ACHJKMNPRTUVWXY")
+valStr1 = asAscii("ACHJKMNPRTUVWXY")
+valStr2 = asAscii("bdfhjkmprstuvwxyz")
+valStr3 = asAscii("3479") + valStr1
 
-def zcfgBeCommonGenKeyBySerialNumConfigLength(serialNumber, size, method=1):
+def zcfgBeCommonGenKeyBySerialNumConfigLength(
+    serialNumber: str,
+    inputKey: str or None,
+    size: int,
+    method: int = 1,
+) -> str:
+    if (not zcfgBeCommonIsApplyRandomAdminPasswordNewAlgorithm(serialNumber)):
+        return zcfgBeCommonGenKeyBySerialNumConfigLengthOld(serialNumber, inputKey, size, method)
     round3 = doubleHash(serialNumber, size)
     round3 = uppercaseBytearray(round3)
 
     md5String = hashFunc(asAscii(serialNumber)).digest()
 
-    #strAsInt = (asInt(md5String, 0) >> 0x18) * 0x100 + ((asInt(md5String, 0) >> 0x10) & 0xff)
-    strAsInt = (md5String[1] << 8) + md5String[2]
+    strAsInt = (md5String[0] << 8) + md5String[1]
+
+    dprint("strAsInt: {} - {}".format(strAsInt, format(strAsInt, "x")))
+
+    #strAsInt = 55000 # expected 12 / 0xc, 55000 / 0xd6d8
+
+    ## (md5Result2[0] >> 0x10 & 0xff) * 0x100 + (md5Result2[0] >> 8 & 0xff)
+    ## (md5Result2[0] >> 0x18) * 0x100 + (md5Result2[0] >> 0x10 & 0xff))
+
+    dprint(asString(round3))
 
     if (method == 1):
         for i in range(0, size):
             for j in range(0, 10):
-                if (round3[i] == strs5[j]):
-                    round3[i] = strs6[(strAsInt + j) % 0x1a]
+                if (round3[i] == keyStrMethod1[j]):
+                    round3[i] = valStrMethod1[(strAsInt + j) % 0x1a]
                     break
     elif(method == 2):
-        round4 = [0] * 16
-
-        found0s = 0
-        found1s = 0
-        found2s = 0
-
-        while(found0s == 0 or found1s == 0 or found2s == 0):
-            found0s = 0
-            found1s = 0
-            found2s = 0
-            
-            local_1e8 = 1
-            strAsInt = strAsInt + 1
-
-            for i in range(0, 10):            
-                round4[i] = (strAsInt % (local_1e8 * 3)) // local_1e8
-                
-                if (round4[i] == 1):
-                    found1s = found1s + 1
-                elif (round4[i] == 2):
-                    found2s = found2s + 1
-                else:
-                    found0s = found0s + 1
-
-                local_1e8 = local_1e8 << 1
+        (strAsInt, round4) = mod3KeyGenerator(strAsInt)
+    
+        dprint("round4: ", end="")
+        for i in range(10):
+            dprint(format(round4[i], "d"), end="")
+        dprint()
         
         for i in range(0, size):
             if (round4[i] == 1):
                 newVal = (((round3[i] % 0x1a) * 0x1000000) >> 0x18) + asChar('A')
-                #print("1: {} - {}".format(round3[i], format(newVal, "c")))
+                dprint("1: {} - {}".format(round3[i], format(newVal, "c")))
                 round3[i] = newVal
 
                 for j in range(0, 0xb):
-                    if (round3[i] == strs7[j]):
+                    if (round3[i] == keyStr1[j]):
                         index = (strAsInt + j) % 0xf
-                        round3[i] = strsA[index]
+                        dprint("=" + format(valStr1[index], "c"))
+                        round3[i] = valStr1[index]
                         break
             elif (round4[i] == 2):
                 newVal = (((round3[i] % 0x1a) * 0x1000000) >> 0x18) + asChar('a')
-                #print("2: {} - {}".format(round3[i], format(newVal, "c")))
+                dprint("2: {} - {}".format(round3[i], format(newVal, "c")))
                 round3[i] = newVal
 
                 for j in range(0, 9):
-                    if (round3[i] == strs8[j]):
+                    if (round3[i] == keyStr2[j]):
                         index = (strAsInt + j) % 11
-                        round3[i] = strsB[index]
+                        dprint("=" + format(valStr2[index], "c"))
+                        round3[i] = valStr2[index]
                         break
             else:
                 newVal = (((round3[i] % 10) * 0x1000000) >> 0x18) + asChar('0')
-                #print("3: {} - {}".format(round3[i], format(newVal, "c")))
+                dprint("3: {} - {}".format(round3[i], format(newVal, "c")))
                 round3[i] = newVal
 
                 for j in range(0, 6):
-                    if (round3[i] == strs9[j]):
+                    if (round3[i] == keyStr3[j]):
                         var = (strAsInt + j >> 0x1f) >> 0x1e
                         index = ((strAsInt + j + var) & 3) - var
-                        round3[i] = strsC[index]
+                        dprint("=" + format(valStr3[index], "c"))
+                        round3[i] = valStr3[index]
                         break
 
     round3[size] = 0

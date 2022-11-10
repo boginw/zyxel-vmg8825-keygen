@@ -1,4 +1,4 @@
 settings.json
-__pycache__/
+**/__pycache__/
 .vscode/
 expected.txt

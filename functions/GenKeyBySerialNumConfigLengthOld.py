@@ -1,5 +1,5 @@
-from config import *
-from binUtils import *
+from common.config import *
+from common.utils import *
 
 keyStr1 = asAscii("125680")
 keyStr2 = asAscii("BDEFGILOQSZ")
@@ -14,9 +14,9 @@ valStr4 = asAscii("3456789ABCDEFGHJKLMNPQRTUXYSVW")
 valStr5 = asAscii("3478ABCDEFGHJKLMNPQRTUVWXY")
 
 def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
-    serialNumber: str, 
-    inputKey: str or None, 
-    size: int, 
+    serialNumber: str,
+    inputKey: str or None,
+    size: int,
     method: int = 1,
 ) -> str:
     if (inputKey == None or len(inputKey) == 0):
@@ -25,9 +25,14 @@ def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
     md5Result = hashFunc(asAscii(serialNumber)).digest()
     md5Result = hashFunc(asAscii("{}Account_Password{}".format(inputKey, md5Result))).digest()
 
+    dprint("MD5: " + "".join([format(x, "x") for x in md5Result]))
+
     #strAsInt = (asInt(md5Result) >> 0x18) * 0x100 + (asInt(md5Result) >> 0x10 & 0xff)
     strAsInt = (md5Result[1] << 8) + md5Result[2]
-    #print(strAsInt, format(strAsInt, "d"))
+    strAsInt = (md5Result[0] << 8) + md5Result[1]
+    #strAsInt = 55000
+    
+    dprint("strAsInt: {} or 0x{}".format(strAsInt, format(strAsInt, "x")))
 
     methodMultiplier = 1
 
@@ -36,13 +41,13 @@ def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
     elif (method == 2 or method == 3): 
         methodMultiplier = 3
 
-    round1 = bytearray(64)
+    round1 = [0] * 16
 
-    local_f0 = 1
+    powerOf2 = 1
     for i in range(size):
-        assignInt(round1, i * 4, (strAsInt % (methodMultiplier * local_f0)) // local_f0)
-        local_f0 = local_f0 << 1
-    
+        round1[i] = (strAsInt % (methodMultiplier * powerOf2)) // powerOf2
+        powerOf2 = powerOf2 << 1
+
     numberOf1s = 0
     numberOf2s = 0
     numberOf3s = 0
@@ -53,22 +58,22 @@ def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
     for i in range(size):
         char: str
 
-        if (asInt(round1, i * 4) == 1):
-            char = format(md5Result[i] % 0x1a + 0x41, "c")
-
+        if (round1[i] == 1):
+            char = format(md5Result[i] % 0x1a + asChar("A"), "c")
             numberOf1s = numberOf1s + 1
-        elif (asInt(round1, i * 4) == 2):
-            char = format(md5Result[i] % 0x1a + 0x61, "c")
+        elif (round1[i] == 2):
+            char = format(md5Result[i] % 0x1a + asChar("a"), "c")
             numberOf2s = numberOf2s + 1
         else:
             md5Byte = md5Result[i]
-            char = format((md5Byte - ((md5Byte // 10) * 2 + ((md5Byte * 0xcccccccd >> 0x20) & 0xfffffff8)) & 0xff) + 0x30, "c")
+            intermediate = (md5Byte * 0xcccccccd) >> 32 >> 3 << 1
+            char = format(md5Byte - (((intermediate & 0xff) + ((intermediate << 2) & 0xff)) & 0xff) + asChar("0"), "c")
             numberOf3s = numberOf3s + 1
 
         round2[offset:offset + len(char)] = asAscii(char)
         offset = offset + len(char)
 
-        #print("method: {}, i: {}: len({}) = {}".format(method, i, asString(round2), len(round2)))
+        dprint("round1[{}] == {}, len({}) = {}".format(i, round1[i], asString(round2), len(round2)))
 
         if (method == 2):
             for j in range(len(keyStr1)):
@@ -97,7 +102,6 @@ def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
 
     if (method == 2):
         zcfgBeCheckPasswordFormat(round2, strAsInt, numberOf1s, numberOf2s, numberOf3s)
-
     round2[size] = 0
 
     return asString(round2)

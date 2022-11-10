@@ -1,11 +1,11 @@
-from doubleHash import *
-from config import *
-from binUtils import *
+from common.doubleHash import *
+from common.config import *
+from common.utils import *
 
 strs1 = asAscii("125690IOSZ")
 strs2 = asAscii("3478ABCDEFGHJKLMNPQRTUVWXY")
 
-def zcfgBeCommonGenKeyBySerialNum(inputKey: str, serialNumber: str) -> str:
+def zcfgBeCommonGenKeyBySerialNum(serialNumber: str, inputKey: str) -> str:
     md5Result = hashFunc(asAscii(serialNumber)).digest()
     md5Result = hashFunc(asAscii("{}PSK_ra0{}".format(inputKey, md5Result))).digest()
 

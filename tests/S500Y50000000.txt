@@ -1,0 +1,19 @@
+zcfgBeCommonGenKeyBySerialNumMethod2: 127f32a3
+zcfgBeCommonGenKeyBySerialNumMethod3: 9353235Zfy
+zcfgBeCommonGenKeyBySerialNumConfigLengthOld("inputKey", 8, 1): QPLGU7AG
+zcfgBeCommonGenKeyBySerialNumConfigLengthOld("inputKey", 8, 2): Ut94U77H
+zcfgBeCommonGenKeyBySerialNumConfigLengthOld("inputKey", 8, 3): Q3L4U76W
+zcfgBeCommonGenKeyBySerialNumConfigLength("inputKey", 8, 1): KL7F3LA3
+zcfgBeCommonGenKeyBySerialNumConfigLength("inputKey", 8, 2): 94743Yrz
+zcfgBeWindCommonGenKeyBySerialNumConfigLengthOld(2): Ut94U77H97
+zcfgBeWindCommonGenKeyBySerialNumConfigLengthOld(1): QPLGU7AGDV
+zcfgBeWindCommonGenKeyBySerialNumConfigLength(2): XydszYmzP9
+zcfgBeWindCommonGenKeyBySerialNumConfigLength(1): KL7F3LA3PL
+zcfgBeWlanGenDefaultKey(2, 16, 1): 887JXRB48DM3FQH3
+zcfgBeWlanGenDefaultKey(0, 0, 0): 51E9FDE4D6D5B0B0E2B68EADCC
+zcfgBeWlanGenDefaultKey(1, 0, 0): B9B53DCCDA
+zcfgBeWlanGenDefaultKey(2, 16, 0): 867JXR026OM1VQZ3
+zcfgBeWlanGenDefaultKey(2, 16, 2): 887JXRB48DM3VQF3
+zcfgBeWlanGenDefaultKey(2, 16, 3): zxyjxrbtxemrvqzu
+zcfgBeWlanGenDefaultKey(2, 16, 4): 867JXRYX6VMUVQW3
+zcfgBeWlanGenDefaultKey(2, 16, 5): sr7JXRtmr4MkV7A3

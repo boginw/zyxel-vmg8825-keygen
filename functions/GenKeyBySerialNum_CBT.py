@@ -1,6 +1,6 @@
-from doubleHash import *
-from config import *
-from binUtils import *
+from common.doubleHash import *
+from common.config import *
+from common.utils import *
 
 strs1 = asAscii("120IOZoliz")
 strs2 = asAscii("3456789ABCDEFGHJKLMNPQRTUXYSVW")
