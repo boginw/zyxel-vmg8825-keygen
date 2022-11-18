@@ -28,6 +28,7 @@ for testFile in listdir(testDir):
         expectedSeperator = line.index(": ")
 
         params = "\"" + serialNumber + "\""
+        extraParams = ""
         function = ""
         if (not "(" in line[:expectedSeperator]):
             function = line[:expectedSeperator]
@@ -35,7 +36,8 @@ for testFile in listdir(testDir):
             paramsStart = line.index("(") + 1
             paramsEnd = line.index(")")
             function = line[:paramsStart - 1]
-            params = params + ", " + line[paramsStart: paramsEnd]
+            extraParams = line[paramsStart: paramsEnd]
+            params = params + ", " + extraParams
         
         expected = line[expectedSeperator + 2:]
 
@@ -43,11 +45,13 @@ for testFile in listdir(testDir):
 
         try:
             result = eval(function + "(" + params + ")")
+            lastParam = extraParams[-1] if len(extraParams) > 0 else ""
+            testName = trimmedFunctionName + "(" + lastParam + ")"
             if (expected != result):
-                print("    \033[91mFail\033[0m: {:33}: expected \033[96m{:>10}\033[0m but got \033[96m{:>10}\033[0m".format(trimmedFunctionName, expected, result))
+                print("    \033[91mFail\033[0m: {:36}: expected \033[96m{:>8}\033[0m but got \033[96m{:>8}\033[0m".format(testName, expected, result))
                 anyFailed = True
             else:
-                print("    \033[92mPass\033[0m: {}".format(trimmedFunctionName))
+                print("    \033[92mPass\033[0m: {}".format(testName))
         except NameError:
             continue
 
