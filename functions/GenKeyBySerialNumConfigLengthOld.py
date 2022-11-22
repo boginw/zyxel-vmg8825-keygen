@@ -23,30 +23,24 @@ def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
         return "1234"
     
     md5Result = hashFunc(asAscii(serialNumber)).digest()
-    md5Result = hashFunc(asAscii("{}Account_Password{}".format(inputKey, md5Result))).digest()
-
+    dprint("MD5: " + "".join([format(x, "x") for x in md5Result]))
+    dprint(asAscii(inputKey + "Account_Password") + md5Result)
+    md5Result = hashFunc(asAscii(inputKey + "Account_Password") + md5Result).digest()
     dprint("MD5: " + "".join([format(x, "x") for x in md5Result]))
 
-    #strAsInt = (asInt(md5Result) >> 0x18) * 0x100 + (asInt(md5Result) >> 0x10 & 0xff)
-    strAsInt = (md5Result[1] << 8) + md5Result[2]
-    strAsInt = (md5Result[0] << 8) + md5Result[1]
-    #strAsInt = 55000
+    strAsInt = (md5Result[3] << 8) + md5Result[2]
     
     dprint("strAsInt: {} or 0x{}".format(strAsInt, format(strAsInt, "x")))
 
-    methodMultiplier = 1
-
-    if (method == 1): 
-        methodMultiplier = 2
-    elif (method == 2 or method == 3): 
-        methodMultiplier = 3
+    methodMultiplier = 2 if method == 1 else 3
 
     round1 = [0] * 16
 
     powerOf2 = 1
     for i in range(size):
         round1[i] = (strAsInt % (methodMultiplier * powerOf2)) // powerOf2
-        powerOf2 = powerOf2 << 1
+        dprint("({} % ({} * {:3})) // {:3} = {}".format(strAsInt, methodMultiplier, powerOf2, powerOf2, round1[i]))
+        powerOf2 = powerOf2 * 2
 
     numberOf1s = 0
     numberOf2s = 0
@@ -70,10 +64,10 @@ def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
             char = format(md5Byte - (((intermediate & 0xff) + ((intermediate << 2) & 0xff)) & 0xff) + asChar("0"), "c")
             numberOf3s = numberOf3s + 1
 
-        round2[offset:offset + len(char)] = asAscii(char)
+        round2[offset] = asChar(char)
         offset = offset + len(char)
 
-        dprint("round1[{}] == {}, len({}) = {}".format(i, round1[i], asString(round2), len(round2)))
+        dprint("round1[{}] == {}, len({:8}) = {}".format(i, round1[i], asString(round2), len(asString(round2))), end="")
 
         if (method == 2):
             for j in range(len(keyStr1)):
@@ -98,7 +92,9 @@ def zcfgBeCommonGenKeyBySerialNumConfigLengthOld(
             for j in range(len(keyStr5)):
                 if (round2[i] == keyStr5[j]):
                     round2[i] = valStr5[(strAsInt + j) % 0x1a]
+                    dprint(" replace with {}".format(format(round2[i], "c")), end="")
                     break
+            dprint()
 
     if (method == 2):
         zcfgBeCheckPasswordFormat(round2, strAsInt, numberOf1s, numberOf2s, numberOf3s)

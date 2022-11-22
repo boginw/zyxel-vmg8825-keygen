@@ -2,6 +2,8 @@ import struct
 from common.config import *
 import inspect
 
+ended = True
+
 def asInt(bytes: bytearray | bytes, start: int = 0) -> int:
     global endian
     if (endian == "big"):
@@ -44,10 +46,12 @@ def dprint(
     end: str | None = None,
     flush: bool = False,
 ) -> None:
-    global debug
+    global debug, ended
     if (debug):
-        if (end == None and len(values) > 0):
+        if (ended and len(values) > 0):
             print("\033[94m", end="")
             print(inspect.stack()[1][0].f_code.co_name[-32:], end=": ")
             print("\033[0m", end="")
+        
+        ended = end == None or "\n" in end
         print(*values, sep = sep, end = end, flush = flush)
