@@ -1,4 +1,4 @@
-def mod3KeyGenerator(seed: int) -> tuple[int, list[int]]:
+def mod3KeyGenerator(seed: int):
     round4 = [0] * 16
 
     found0s = 0

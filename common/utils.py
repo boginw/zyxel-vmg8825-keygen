@@ -4,7 +4,7 @@ import inspect
 
 ended = True
 
-def asInt(bytes: bytearray | bytes, start: int = 0) -> int:
+def asInt(bytes: bytes, start: int = 0) -> int:
     global endian
     if (endian == "big"):
         return struct.unpack_from(">I", bytes, start)[0]
@@ -33,7 +33,7 @@ def asString(bytes: bytes) -> str:
 def asChar(string: str) -> int:
     return asAscii(string)[0]
 
-def char(bytes: bytearray | bytes, start: int = 0):
+def char(bytes: bytes, start: int = 0):
     global endian
     if (endian == "big"):
         return int.from_bytes(struct.unpack_from(">c", bytes, start)[0], "big")
@@ -42,8 +42,8 @@ def char(bytes: bytearray | bytes, start: int = 0):
 
 def dprint(
     *values: object,
-    sep: str | None = None,
-    end: str | None = None,
+    sep: str = None,
+    end: str = None,
     flush: bool = False,
 ) -> None:
     global debug, ended
